@@ -1,0 +1,60 @@
+#!/bin/bash
+
+echo Hello
+
+echo "requestNewUser(name, email, phone, aadharNo)"
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet-users:requestNewUser","Akash Sinha","akash.sinha@upgrad.com", "7091384117", "aad-001"]}'
+
+sleep 5
+
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet-users:requestNewUser","Ayush Deepankar","ayush.kumar@upgrad.com", "1234567891", "aad-002"]}'
+
+sleep 5
+
+echo "approveNewUser(name, aadharNo)"
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet-registrar:approveNewUser","Akash Sinha", "aad-001"]}'
+
+sleep 5
+
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet-registrar:approveNewUser","Ayush Deepankar", "aad-002"]}'
+
+sleep 5
+
+echo "rechargeAccount(name, aadharNo, bankTransactionID)"
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet-users:rechargeAccount","Akash Sinha", "aad-001","upg1000"]}'
+
+sleep 5
+
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet-users:rechargeAccount","Ayush Deepankar", "aad-002","upg1000"]}'
+
+sleep 5
+
+echo "viewUser(ctx, name, aadharNo)"
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet-users:viewUser","Akash Sinha", "aad-001"]}'
+
+sleep 5
+
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet-users:viewUser","Ayush Deepankar", "aad-002"]}'
+
+sleep 5
+
+echo "propertyRegistrationRequest(name, aadharNo, propertyID, price)"
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet-users:propertyRegistrationRequest","Akash Sinha", "aad-001", "001", "500"]}'
+
+sleep 5
+
+echo "approvePropertyRegistration(propertyID)"
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet-registrar:approvePropertyRegistration","001"]}'
+
+sleep 5
+
+echo "viewProperty(propertyID)"
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet-users:viewProperty","001"]}'
+
+sleep 5
+
+echo "updateProperty(propertyID, name, aadharNo, status)"
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet-users:updateProperty", "001", "Akash Sinha", "aad-001", "onSale"]}'
+
+sleep 5
+

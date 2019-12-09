@@ -1,0 +1,7 @@
+./chaincode/node_modules
+_DS_STORE
+./chaincode/_DS_STORE
+./chaincode/_DS_STORE(1)
+./network/bin
+./network-new/bin
+

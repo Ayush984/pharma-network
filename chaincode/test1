@@ -1,0 +1,47 @@
+#!/bin/bash
+echo 'Invokoing register company to register a Manufacturer.'
+
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet:registerCompany","MAN001","SunPharma","Chennai","Manufacturer"]}'
+
+sleep 5
+
+echo 'Invokoing register company to register two transporters.'
+
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet:registerCompany","TRA001","FedEx","Delhi","Transporter"]}'
+
+sleep 5
+
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet:registerCompany","TRA002","Blue Dart","Bangalore","Transporter"]}'
+
+sleep 5
+
+echo 'Invokoing register company to register a distributor.'
+
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet:registerCompany","DIST001","VG Pharma","Vizag","Distributor"]}'
+
+sleep 5
+
+echo 'Invokoing register company to register a retailer.'
+
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet:registerCompany","RET002","upgrad","Mumbai","Retailer"]}'
+
+sleep 5
+
+echo 'Invoking add drug to register a drug on the ledger'
+
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet:addDrug","Paracetamol","001","01/01/2018","01/01/2020","MAN001"]}'
+
+sleep 5
+
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet:addDrug","Paracetamol","002","01/01/2018","01/01/2020","MAN001"]}'
+
+sleep 5
+
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet:addDrug","Paracetamol","003","01/01/2018","01/01/2020","MAN001"]}'
+
+sleep 5
+
+peer chaincode invoke -o orderer.pharma-network.com:7050 -C pharmachannel -n pharmanet -c '{"Args":["org.pharma-network.pharmanet:addDrug","Paracetamol","004","01/01/2018","01/01/2020","MAN001"]}'
+
+sleep 5
+

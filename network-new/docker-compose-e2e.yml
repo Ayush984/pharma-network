@@ -1,0 +1,164 @@
+version: '2'
+
+volumes:
+  orderer.pharma-network.com:
+  peer0.registrar.pharma-network.com:
+  peer1.registrar.pharma-network.com:
+  peer0.users.pharma-network.com:
+  peer1.users.pharma-network.com:
+  peer2.users.pharma-network.com:
+
+
+networks:
+  registration:
+
+services:
+
+  ca.registrar.pharma-network.com:
+    image: hyperledger/fabric-ca:latest
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.registrar.pharma-network.com
+      - FABRIC_CA_SERVER_TLS_ENABLED=false
+      # - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.registrar.pharma-network.com-cert.pem
+      # - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/fbad45db2d47e8560a50a112fd36ab2a00c5514202a61a2d7875d90ba5607c15_sk
+    ports:
+      - "7054:7054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d' # --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.registrar.pharma-network.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/754fccf4ad3f6a483161cf597b79fbdbdadaf1ee2f024e79da8c8e9b8bfb6dcb_sk
+    volumes:
+      - ./crypto-config/peerOrganizations/registrar.pharma-network.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.registrar.pharma-network.com
+    networks:
+      - registration
+
+  ca.users.pharma-network.com:
+    image: hyperledger/fabric-ca:latest
+    environment:
+      - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
+      - FABRIC_CA_SERVER_CA_NAME=ca.users.pharma-network.com
+      - FABRIC_CA_SERVER_TLS_ENABLED=false
+      # - FABRIC_CA_SERVER_TLS_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.users.pharma-network.com-cert.pem
+      # - FABRIC_CA_SERVER_TLS_KEYFILE=/etc/hyperledger/fabric-ca-server-config/USERS_CA_PRIVATE_KEY
+    ports:
+      - "8054:7054"
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d' # --ca.certfile /etc/hyperledger/fabric-ca-server-config/ca.users.pharma-network.com-cert.pem --ca.keyfile /etc/hyperledger/fabric-ca-server-config/69f46c1ef51a71ee0aaadc9cef23aef7b44df2b1e84dad62484980170c01aa22_sk
+    volumes:
+      - ./crypto-config/peerOrganizations/users.pharma-network.com/ca/:/etc/hyperledger/fabric-ca-server-config
+    container_name: ca.users.pharma-network.com
+    networks:
+      - registration
+
+
+
+  orderer.pharma-network.com:
+    extends:
+      file:   docker-base/docker-compose-base.yaml
+      service: orderer.pharma-network.com
+    container_name: orderer.pharma-network.com
+    networks:
+      - registration
+
+  peer0.registrar.pharma-network.com:
+    container_name: peer0.registrar.pharma-network.com
+    extends:
+      file:  docker-base/docker-compose-base.yaml
+      service: peer0.registrar.pharma-network.com
+    networks:
+      - registration
+
+  peer1.registrar.pharma-network.com:
+    container_name: peer1.registrar.pharma-network.com
+    extends:
+      file:  docker-base/docker-compose-base.yaml
+      service: peer1.registrar.pharma-network.com
+    networks:
+      - registration
+
+  peer0.users.pharma-network.com:
+    container_name: peer0.users.pharma-network.com
+    extends:
+      file:  docker-base/docker-compose-base.yaml
+      service: peer0.users.pharma-network.com
+    networks:
+      - registration
+
+  peer1.users.pharma-network.com:
+    container_name: peer1.users.pharma-network.com
+    extends:
+      file:  docker-base/docker-compose-base.yaml
+      service: peer1.users.pharma-network.com
+    networks:
+      - registration
+
+  peer2.users.pharma-network.com:
+    container_name: peer2.users.pharma-network.com
+    extends:
+      file:  docker-base/docker-compose-base.yaml
+      service: peer2.users.pharma-network.com
+    networks:
+      - registration
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools:latest
+    tty: true
+    stdin_open: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.registrar.pharma-network.com:7051
+      - CORE_PEER_LOCALMSPID=registrarMSP
+      - CORE_PEER_TLS_ENABLED=false
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/registrar.pharma-network.com/peers/peer0.registrar.pharma-network.com/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/registrar.pharma-network.com/peers/peer0.registrar.pharma-network.com/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/registrar.pharma-network.com/peers/peer0.registrar.pharma-network.com/tls/ca.crt
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/registrar.pharma-network.com/users/Admin@registrar.pharma-network.com/msp
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+    command: /bin/bash
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./../chaincode/:/opt/gopath/src/github.com/hyperledger/fabric/peer/chaincode/
+      - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+      - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
+      - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+    depends_on:
+      - ca.registrar.pharma-network.com
+      - ca.users.pharma-network.com
+      - orderer.pharma-network.com
+      - peer0.registrar.pharma-network.com
+      - peer1.registrar.pharma-network.com
+      - peer0.users.pharma-network.com
+      - peer1.users.pharma-network.com
+      - peer2.users.pharma-network.com
+
+
+    networks:
+      - registration
+
+  chaincode:
+    container_name: chaincode
+    image: hyperledger/fabric-ccenv:latest
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=INFO
+      - CORE_PEER_ID=chaincode
+      - CORE_PEER_ADDRESS=peer0.registrar.pharma-network.com:7051
+      - CORE_PEER_LOCALMSPID=registrarMSP
+      - CORE_PEER_TLS_ENABLED=false
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/crypto/peerOrganizations/registrar.pharma-network.com/users/Admin@registrar.pharma-network.com/msp
+      - CORE_TLS_CLIENT_KEY_PATH=/opt/gopath/src/crypto/peerOrganizations/registrar.pharma-network.com/users/Admin@registrar.pharma-network.com/tls/client.key
+      - CORE_TLS_CLIENT_CERT_PATH=/opt/gopath/src/crypto/peerOrganizations/registrar.pharma-network.com/users/Admin@registrar.pharma-network.com/tls/client.crt
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/crypto/peerOrganizations/registrar.pharma-network.com/users/Admin@registrar.pharma-network.com/tls/ca.crt
+    working_dir: /opt/gopath/src/chaincode
+    command: /bin/bash -c 'sleep 6000000'
+    volumes:
+      - /var/run/:/host/var/run/
+      - ./../chaincode:/opt/gopath/src/chaincode
+      - ./crypto-config:/opt/gopath/src/crypto
+    networks:
+      - registration
+
